@@ -70,7 +70,7 @@
                 [self sendConsoleMessage:[NSString stringWithFormat:@"Arguments are ignored because %@ rights have been assigned by an administrator", ([enforcedPrivileges isEqualToString:@"admin"]) ? @"admin" : @"standard user"]];
             }
 
-            if ([theArguments count] == 2 && ([lastArgument isEqualToString:@"--remove"] || [lastArgument isEqualToString:@"--add"])) {
+            if ([theArguments count] == 2 && (/* [lastArgument isEqualToString:@"--remove"] || */[lastArgument isEqualToString:@"--add"])) {
                 
                 if ([enforcedPrivileges isEqualToString:@"none"] || (!enforcedPrivileges &&
                     ((limitToUser && ![[limitToUser lowercaseString] isEqualToString:_currentUser]) ||
@@ -97,42 +97,44 @@
                             [self logError:nil withDescription:[NSString stringWithFormat:@"User %@ already has the requested privileges. Nothing to do.", _currentUser] andTerminate:NO];
                             allowUsage = NO;
                         
-                        } else {
-                            
-                            // if admin rights are requested and authentication is required, we ask for the user's password ...
-                            if (_grantAdminRights && ([_userDefaults objectIsForcedForKey:kMTDefaultsAuthRequired] && [_userDefaults boolForKey:kMTDefaultsAuthRequired])) {
-                                
-                                char *password = getpass("Please enter your account password: ");
-                                NSString *userPassword = [NSString stringWithUTF8String:password];
-                                
-                                if ([userPassword length] <= 0 || ![MTIdentity verifyPassword:userPassword forUser:_currentUser]) {
-                                    [self logError:nil withDescription:@"Incorrect password! Unable to change group membership." andTerminate:NO];
-                                    allowUsage = NO;
-                                }
-                            }
-                            
-                            if (allowUsage && _grantAdminRights && ([_userDefaults objectIsForcedForKey:kMTDefaultsRequireReason] && [_userDefaults boolForKey:kMTDefaultsRequireReason])) {
-                                
-                                NSInteger minReasonLength = 0;
-                                if ([_userDefaults objectIsForcedForKey:kMTDefaultsReasonMinLength]) { minReasonLength = [_userDefaults integerForKey:kMTDefaultsReasonMinLength]; }
-                                if (minReasonLength <= 0) { minReasonLength = kMTReasonMinLengthDefault; }
-                                
-                                _adminReason = nil;
-                                char reason[kMTReasonMaxLengthDefault] = {0};
-                                printf("Please enter the reason for needing admin rights (at least %ld characters): ", (long)minReasonLength);
-                                fgets(reason, kMTReasonMaxLengthDefault, stdin);
-                                reason[strcspn(reason, "\n")] = '\0';
-                                NSString *reasonText = [NSString stringWithUTF8String:reason];
-                                
-                                if ([reasonText length] < minReasonLength) {
-                                    [self logError:nil withDescription:@"The provided reason does not match the requirements!" andTerminate:NO];
-                                    allowUsage = NO;
-                                } else {
-                                    _adminReason = reasonText;
-                                }
-                            }
-
                         }
+                        
+                        // else {
+                            
+                        //     // if admin rights are requested and authentication is required, we ask for the user's password ...
+                        //     if (_grantAdminRights && ([_userDefaults objectIsForcedForKey:kMTDefaultsAuthRequired] && [_userDefaults boolForKey:kMTDefaultsAuthRequired])) {
+                                
+                        //         char *password = getpass("Please enter your account password: ");
+                        //         NSString *userPassword = [NSString stringWithUTF8String:password];
+                                
+                        //         if ([userPassword length] <= 0 || ![MTIdentity verifyPassword:userPassword forUser:_currentUser]) {
+                        //             [self logError:nil withDescription:@"Incorrect password! Unable to change group membership." andTerminate:NO];
+                        //             allowUsage = NO;
+                        //         }
+                        //     }
+                            
+                        //     if (allowUsage && _grantAdminRights && ([_userDefaults objectIsForcedForKey:kMTDefaultsRequireReason] && [_userDefaults boolForKey:kMTDefaultsRequireReason])) {
+                                
+                        //         NSInteger minReasonLength = 0;
+                        //         if ([_userDefaults objectIsForcedForKey:kMTDefaultsReasonMinLength]) { minReasonLength = [_userDefaults integerForKey:kMTDefaultsReasonMinLength]; }
+                        //         if (minReasonLength <= 0) { minReasonLength = kMTReasonMinLengthDefault; }
+                                
+                        //         _adminReason = nil;
+                        //         char reason[kMTReasonMaxLengthDefault] = {0};
+                        //         printf("Please enter the reason for needing admin rights (at least %ld characters): ", (long)minReasonLength);
+                        //         fgets(reason, kMTReasonMaxLengthDefault, stdin);
+                        //         reason[strcspn(reason, "\n")] = '\0';
+                        //         NSString *reasonText = [NSString stringWithUTF8String:reason];
+                                
+                        //         if ([reasonText length] < minReasonLength) {
+                        //             [self logError:nil withDescription:@"The provided reason does not match the requirements!" andTerminate:NO];
+                        //             allowUsage = NO;
+                        //         } else {
+                        //             _adminReason = reasonText;
+                        //         }
+                        //     }
+
+                        // }
                     }
                     
                     if (allowUsage) {
@@ -179,11 +181,13 @@
                     }
                 }
             
-            } else {
-                
-                // display usage info and exit
-                [self printUsage];
             }
+            
+            // else {
+                
+            //     // display usage info and exit
+            //     [self printUsage];
+            // }
         }
         
     } else {
@@ -205,7 +209,7 @@
 {
     fprintf(stderr, "\nUsage: PrivilegesCLI <arg>\n\n");
     fprintf(stderr, "Arguments:   --add        Adds the current user to the admin group\n");
-    fprintf(stderr, "             --remove     Removes the current user from the admin group\n");
+    // fprintf(stderr, "             --remove     Removes the current user from the admin group\n");
     fprintf(stderr, "             --status     Displays the current user's privileges\n\n");
     
     [self terminateRunLoop];

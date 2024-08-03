@@ -489,25 +489,25 @@ extern void CoreDockSendNotification(CFStringRef, void*);
     // change group membership
     if (changeNeeded) {
         
-        // ask for the account password to grant admin rights
-        if (!isAdmin && [_userDefaults boolForKey:kMTDefaultsAuthRequired] && !_autoApplyPrivileges) {
+        // // ask for the account password to grant admin rights
+        // if (!isAdmin && [_userDefaults boolForKey:kMTDefaultsAuthRequired] && !_autoApplyPrivileges) {
             
-            [MTIdentity authenticateUserWithReason:NSLocalizedString(@"authenticationText", nil)
-                                 completionHandler:^(BOOL success, NSError *error) {
+        //     [MTIdentity authenticateUserWithReason:NSLocalizedString(@"authenticationText", nil)
+        //                          completionHandler:^(BOOL success, NSError *error) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+        //         dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    if (success) {
-                        [self changeAdminGroup:self->_currentUser remove:isAdmin];
-                    } else {
-                        [self displayNoChangeNotificationAndExit];
-                    }
-                });
-            }];
+        //             if (success) {
+        //                 [self changeAdminGroup:self->_currentUser remove:isAdmin];
+        //             } else {
+        //                 [self displayNoChangeNotificationAndExit];
+        //             }
+        //         });
+        //     }];
             
-        } else {
+        // } else {
             [self changeAdminGroup:_currentUser remove:isAdmin];
-        }
+        // }
         
     } else {
 
@@ -675,29 +675,29 @@ extern void CoreDockSendNotification(CFStringRef, void*);
             
         } else {
 
-            BOOL isAdmin = [MTIdentity getGroupMembershipForUser:_currentUser groupID:kMTAdminGroupID error:nil];
+            // BOOL isAdmin = [MTIdentity getGroupMembershipForUser:_currentUser groupID:kMTAdminGroupID error:nil];
 
-            if (!isAdmin && ([_userDefaults objectIsForcedForKey:kMTDefaultsRequireReason] && [_userDefaults boolForKey:kMTDefaultsRequireReason])) {
+            // if (!isAdmin && ([_userDefaults objectIsForcedForKey:kMTDefaultsRequireReason] && [_userDefaults boolForKey:kMTDefaultsRequireReason])) {
                 
-                [self getReasonForNeedingAdminRightsWithCompletionHandler:^(NSString *reason) {
+            //     [self getReasonForNeedingAdminRightsWithCompletionHandler:^(NSString *reason) {
                         
-                        dispatch_async(dispatch_get_main_queue(), ^{
+            //             dispatch_async(dispatch_get_main_queue(), ^{
                             
-                            if (reason) {
-                                self->_adminReason = reason;
-                                [self->_mainWindow orderOut:self];
+            //                 if (reason) {
+            //                     self->_adminReason = reason;
+            //                     [self->_mainWindow orderOut:self];
 
-                                [self performSelectorOnMainThread:@selector(checkForHelper) withObject:nil waitUntilDone:NO];
-                            }
-                        });
-                    }];
+            //                     [self performSelectorOnMainThread:@selector(checkForHelper) withObject:nil waitUntilDone:NO];
+            //                 }
+            //             });
+            //         }];
                 
-            } else {
+            // } else {
                 
                 // check for the helper (and the correct version)
                 [_mainWindow orderOut:self];
                 [self performSelectorOnMainThread:@selector(checkForHelper) withObject:nil waitUntilDone:NO];
-            }
+            // }
         }
     }
 }
